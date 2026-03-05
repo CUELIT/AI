@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>IT Self-Service · AI Toolkit</title>
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;600;700;800&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #080c14;
+    --surface: #0d1421;
+    --card: #111827;
+    --card-hover: #161f30;
+    --border: rgba(255,255,255,0.07);
+    --text: #e2e8f0;
+    --muted: #4b5a6e;
+    --accent: #38bdf8;
+    --accent2: #818cf8;
+  }
+
+  * { margin:0; padding:0; box-sizing:border-box; }
+
+  html, body {
+    width:100%; height:auto;
+    overflow-x:hidden;
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Sarabun', sans-serif;
+  }
+
+  body::before {
+    content:'';
+    position:fixed; inset:0;
+    background-image:
+      linear-gradient(rgba(56,189,248,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(56,189,248,0.03) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events:none; z-index:0;
+  }
+
+  body::after {
+    content:'';
+    position:fixed; inset:0;
+    background:
+      radial-gradient(ellipse at 15% 10%, rgba(56,189,248,0.08) 0%, transparent 50%),
+      radial-gradient(ellipse at 85% 80%, rgba(129,140,248,0.07) 0%, transparent 50%);
+    pointer-events:none; z-index:0;
+  }
+
+  .wrap {
+    position:relative; z-index:1;
+    max-width:1100px;
+    margin:0 auto;
+    padding: 60px 24px 80px;
+  }
+
+  /* HEADER */
+  .header { text-align:center; margin-bottom:48px; }
+
+  .badge {
+    display:inline-flex; align-items:center; gap:8px;
+    font-family:'JetBrains Mono', monospace;
+    font-size:10px; font-weight:700;
+    letter-spacing:3px; text-transform:uppercase;
+    padding:6px 18px; border-radius:99px;
+    background:rgba(56,189,248,0.08);
+    border:1px solid rgba(56,189,248,0.2);
+    color:var(--accent);
+    margin-bottom:24px;
+    animation: fadeDown 0.6s ease both;
+  }
+
+  .badge-dot {
+    width:6px; height:6px; border-radius:50%;
+    background:var(--accent);
+    animation: pulse 2s ease infinite;
+  }
+
+  @keyframes pulse {
+    0%,100% { opacity:1; transform:scale(1); }
+    50%      { opacity:0.4; transform:scale(0.7); }
+  }
+
+  h1 {
+    font-size: clamp(2rem, 5vw, 3.2rem);
+    font-weight:800; line-height:1.15;
+    margin-bottom:14px;
+    animation: fadeDown 0.6s 0.1s ease both;
+  }
+
+  .hl  { color:var(--accent); }
+  .hl2 { color:var(--accent2); }
+
+  .subtitle {
+    color:var(--muted); font-size:.95rem; font-weight:300;
+    animation: fadeDown 0.6s 0.2s ease both;
+  }
+
+  /* STATS */
+  .stats {
+    display:flex; justify-content:center; gap:32px;
+    margin: 28px 0 44px; flex-wrap:wrap;
+    animation: fadeDown 0.6s 0.3s ease both;
+  }
+
+  .stat { text-align:center; }
+
+  .stat-num {
+    font-family:'JetBrains Mono', monospace;
+    font-size:1.6rem; font-weight:700;
+    color:var(--accent); display:block;
+  }
+
+  .stat-lbl {
+    font-size:.75rem; color:var(--muted);
+    font-family:'JetBrains Mono', monospace;
+    letter-spacing:1px; text-transform:uppercase;
+  }
+
+  .stat-divider { width:1px; background:var(--border); align-self:stretch; }
+
+  /* GRID */
+  .grid {
+    display:grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px,1fr));
+    gap:20px;
+  }
+
+  /* CARD */
+  .card {
+    background:var(--card);
+    border:1px solid var(--border);
+    border-radius:16px;
+    padding:28px;
+    text-decoration:none;
+    color:inherit;
+    display:flex; flex-direction:column; gap:16px;
+    position:relative; overflow:hidden;
+    transition: transform 0.3s cubic-bezier(.34,1.5,.64,1),
+                box-shadow 0.3s ease,
+                border-color 0.2s ease,
+                background 0.2s ease;
+    animation: fadeUp 0.55s ease both;
+  }
+
+  .card:hover {
+    transform: translateY(-6px);
+    background: var(--card-hover);
+    border-color: var(--c, var(--accent));
+    box-shadow: 0 16px 40px rgba(0,0,0,0.4);
+  }
+
+  .card::before {
+    content:'';
+    position:absolute; top:0; left:0; right:0; height:2px;
+    background: var(--c, var(--accent));
+    opacity:0.6; transition: opacity 0.2s;
+  }
+  .card:hover::before { opacity:1; }
+
+  .card::after {
+    content:'';
+    position:absolute; top:-40px; right:-40px;
+    width:120px; height:120px; border-radius:50%;
+    background: var(--c, var(--accent));
+    opacity:0.04; transition: opacity 0.3s, transform 0.3s;
+  }
+  .card:hover::after { opacity:0.09; transform:scale(1.3); }
+
+  .card:nth-child(1) { --c:#38bdf8; animation-delay:.05s; }
+  .card:nth-child(2) { --c:#818cf8; animation-delay:.10s; }
+  .card:nth-child(3) { --c:#34d399; animation-delay:.15s; }
+  .card:nth-child(4) { --c:#fbbf24; animation-delay:.20s; }
+  .card:nth-child(5) { --c:#f87171; animation-delay:.25s; }
+  .card:nth-child(6) { --c:#c084fc; animation-delay:.30s; }
+  .card:nth-child(7) { --c:#fb923c; animation-delay:.35s; }
+  .card:nth-child(8) { --c:#2dd4bf; animation-delay:.40s; }
+
+  .card-top {
+    display:flex; align-items:center; gap:14px;
+  }
+
+  .card-icon { font-size:2rem; line-height:1; flex-shrink:0; }
+
+  .card-tag {
+    font-family:'JetBrains Mono', monospace;
+    font-size:9px; font-weight:700; letter-spacing:2px; text-transform:uppercase;
+    padding:3px 10px; border-radius:5px;
+    background: color-mix(in srgb, var(--c) 12%, transparent);
+    border:1px solid color-mix(in srgb, var(--c) 25%, transparent);
+    color: var(--c);
+    margin-left:auto; flex-shrink:0;
+  }
+
+  .card-title { font-size:1.05rem; font-weight:700; color:#f1f5f9; line-height:1.3; }
+
+  .card-desc {
+    font-size:.875rem; color:#64748b;
+    line-height:1.7; font-weight:300; flex:1;
+  }
+
+  .card-footer {
+    display:flex; align-items:center; justify-content:space-between;
+    padding-top:14px; border-top:1px solid var(--border); margin-top:auto;
+  }
+
+  .card-meta {
+    font-family:'JetBrains Mono', monospace;
+    font-size:9px; color:var(--muted);
+    letter-spacing:1px; text-transform:uppercase;
+  }
+
+  .card-arrow {
+    font-family:'JetBrains Mono', monospace;
+    font-size:9px; font-weight:700;
+    color:var(--c);
+    display:flex; align-items:center; gap:5px;
+    letter-spacing:1px; text-transform:uppercase;
+    transition: gap 0.2s;
+  }
+  .card:hover .card-arrow { gap:9px; }
+
+  /* ADD CARD */
+  .card-add {
+    border-style:dashed;
+    border-color:rgba(255,255,255,0.1);
+    background:transparent;
+    align-items:center; justify-content:center;
+    text-align:center; gap:12px; min-height:180px;
+    animation-delay:.30s; cursor:default;
+  }
+  .card-add:hover {
+    border-color:rgba(56,189,248,0.25);
+    background:rgba(56,189,248,0.03);
+    box-shadow:none; transform:none;
+  }
+  .card-add::before, .card-add::after { display:none; }
+
+  .add-icon { font-size:2rem; opacity:0.25; }
+  .add-text { font-size:.85rem; color:var(--muted); font-weight:300; line-height:1.6; }
+
+  /* FOOTER */
+  .footer {
+    text-align:center; margin-top:60px;
+    font-family:'JetBrains Mono', monospace;
+    font-size:10px; color:var(--muted); letter-spacing:2px;
+  }
+  .footer strong { color:var(--accent); }
+
+  /* ANIMATIONS */
+  @keyframes fadeDown {
+    from { opacity:0; transform:translateY(-16px); }
+    to   { opacity:1; transform:translateY(0); }
+  }
+  @keyframes fadeUp {
+    from { opacity:0; transform:translateY(24px) scale(0.97); }
+    to   { opacity:1; transform:translateY(0) scale(1); }
+  }
+
+  /* RESPONSIVE */
+  @media (max-width:640px) {
+    .wrap { padding:36px 14px 60px; }
+    h1 { font-size:1.8rem; }
+    .grid { grid-template-columns:1fr; }
+    .stats { gap:20px; }
+    .stat-num { font-size:1.3rem; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="header">
+    <div class="badge">
+      <span class="badge-dot"></span>
+      IT Self-Service Portal · AI Toolkit
+    </div>
+    <h1><span class="hl">AI Prompt</span><br><span class="hl2">สำหรับพนักงาน</span></h1>
+    <p class="subtitle">รวม Tools และ Guides การใช้งาน AI เบื้องต้นสำหรับการทำงาน</p>
+  </div>
+
+  <div class="stats">
+    <div class="stat">
+      <span class="stat-num">4</span>
+      <span class="stat-lbl">Tools & Guides</span>
+    </div>
+    <div class="stat-divider"></div>
+    <div class="stat">
+      <span class="stat-num">12</span>
+      <span class="stat-lbl">Departments</span>
+    </div>
+    <div class="stat-divider"></div>
+    <div class="stat">
+      <span class="stat-num">130+</span>
+      <span class="stat-lbl">AI Prompts</span>
+    </div>
+  </div>
+
+  <div class="grid">
+
+    <a class="card" href="dept-ai-prompts.html" target="_blank">
+      <div class="card-top">
+        <span class="card-icon">🏢</span>
+        <span class="card-tag">Prompts</span>
+      </div>
+      <div class="card-title">AI Prompts ทุกแผนก</div>
+      <div class="card-desc">รวม Prompt Templates สำหรับ 11 แผนก ครอบคลุม HR, Admin, Accounting, Engineering, Legal, Logistics และอื่นๆ พร้อมใช้งานได้ทันที</div>
+      <div class="card-footer">
+        <span class="card-meta">110 Prompts · 11 Depts</span>
+        <span class="card-arrow">Open <span>→</span></span>
+      </div>
+    </a>
+
+    <a class="card" href="office-ai-prompts1.html" target="_blank">
+      <div class="card-top">
+        <span class="card-icon">💡</span>
+        <span class="card-tag">Prompts</span>
+      </div>
+      <div class="card-title">10 AI Prompts พนักงานออฟฟิศ</div>
+      <div class="card-desc">Prompt ที่พนักงานออฟฟิศใช้บ่อยที่สุด คัดสรรมาแล้ว 10 ข้อ พร้อม Template ที่คัดลอกไปใช้ได้เลย</div>
+      <div class="card-footer">
+        <span class="card-meta">10 Prompts · Office Use</span>
+        <span class="card-arrow">Open <span>→</span></span>
+      </div>
+    </a>
+
+    <a class="card" href="ai-tips-tricks.html" target="_blank">
+      <div class="card-top">
+        <span class="card-icon">🚀</span>
+        <span class="card-tag">Guide</span>
+      </div>
+      <div class="card-title">AI Tips & Tricks มือใหม่</div>
+      <div class="card-desc">10 เคล็ดลับการใช้งาน AI อย่างมีประสิทธิภาพ ตั้งแต่การกำหนด Role, Format Output จนถึงการ Verify คำตอบ</div>
+      <div class="card-footer">
+        <span class="card-meta">10 Tips · Beginner Guide</span>
+        <span class="card-arrow">Open <span>→</span></span>
+      </div>
+    </a>
+
+    <a class="card" href="ai-warnings.html" target="_blank">
+      <div class="card-top">
+        <span class="card-icon">⚠️</span>
+        <span class="card-tag">Safety</span>
+      </div>
+      <div class="card-title">10 ข้อควรระวังก่อนใช้ AI</div>
+      <div class="card-desc">สิ่งที่มือใหม่ต้องรู้ก่อนใช้ AI ทุกครั้ง ตั้งแต่ข้อมูลส่วนตัว ลิขสิทธิ์ ไปจนถึงการพึ่งพา AI มากเกินไป</div>
+      <div class="card-footer">
+        <span class="card-meta">10 Warnings · Must Read</span>
+        <span class="card-arrow">Open <span>→</span></span>
+      </div>
+    </a>
+
+    <a class="card" href="canva-prompt-guide_1.html" target="_blank">
+      <div class="card-top">
+        <span class="card-icon">🚀</span>
+        <span class="card-tag">Guide</span>
+      </div>
+      <div class="card-title">โครงสร้างการเขียน Prompt Canva AI</div>
+      <div class="card-desc">คู่มือสร้าง Prompt สำหรับ Canva AI · มีทั้งโครงสร้างและตัวอย่าง Prompts</div>
+      <div class="card-footer">
+        <span class="card-meta">Basic Structure · Beginer Guide</span>
+        <span class="card-arrow">Open <span>→</span></span>
+      </div>
+    </a>
+
+    <a class="card" href="notebooklm-guide.html" target="_blank">
+      <div class="card-top">
+        <span class="card-icon">🚀</span>
+        <span class="card-tag">Guide</span>
+      </div>
+      <div class="card-title">การเขียน prompt NotebookLM</div>
+      <div class="card-desc"> NottbookLM คืออะไร? และเหมาะกับงานด้านไหนบ้าง พร้อมโครงสร้าง</div>
+      <div class="card-footer">
+        <span class="card-meta">Basic Structure · Beginer Guide</span>
+        <span class="card-arrow">Open <span>→</span></span>
+      </div>
+    </a>
+    
+    <div class="card card-add">
+      <div class="add-icon">＋</div>
+      <div class="add-text">สำหรับ Tool ใหม่<br>ที่จะเพิ่มในอนาคต</div>
+    </div>
+
+  </div>
+
+  <div class="footer">
+    <strong>IT SELF-SERVICE PORTAL</strong> &nbsp;·&nbsp; AI TOOLKIT &nbsp;·&nbsp; CREATED BY CLAUDE AI PRO 2026
+  </div>
+
+</div>
+</body>
+</html>
